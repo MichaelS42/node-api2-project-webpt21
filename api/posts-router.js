@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const Posts = require(".../data/db.js");
-const Comments = require(".../data/db.js");
-const { json } = require("express");
+router.use(express.json());
+const Posts = require("../data/db.js");
+const Comments = require("../data/db.js");
 
 router.get("/", (req, res) => {
   Posts.find(req.query)
@@ -37,7 +37,7 @@ router.get("/:id", (req, res) => {
 });
 
 router.get("/:id/comments", (req, res) => {
-  Posts.findCommentById(req.params.id)
+  Comments.findCommentById(req.params.id)
     .then((comments) => {
       if (comments) {
         res.status(200).json(comments);
@@ -74,7 +74,7 @@ router.post("/", (req, res) => {
 
 router.post("/:id/comments", (req, res) => {
   const comment = req.body;
-  Posts.insertComment(req.body);
+  Comments.insertComment(req.body);
   if (!comment.text) {
     res.status(400).json({ erroMessage: "please provide text for comment" });
   } else if (!comment) {
@@ -85,16 +85,16 @@ router.post("/:id/comments", (req, res) => {
 router.delete("/:id", (req, res) => {
   Posts.remove(req.params.id)
     .then((removed) => {
-      if (removed === o) {
+      if (removed === 0) {
         res.status(404).json({
-          message: "Post with specified ID does not exits",
+          message: "The post ID does not exist.",
         });
       } else {
         res.status(200).json(removed);
       }
     })
     .catch((error) => {
-      res.status(500).json("error on server side");
+      res.status(500).json("Error on server side.");
     });
 });
 
@@ -102,7 +102,7 @@ router.put("/:id", (req, res) => {
   const update = req.body;
   Posts.findById(req.params.id)
     .then(() => {
-      if (!updatae.title || !updtate.contents) {
+      if (!update.title || !update.contents) {
         res.status(400).json({
           errorMessage: "need title and contents",
         });
@@ -122,3 +122,5 @@ router.put("/:id", (req, res) => {
       res.status(404).json({ message: "post doesn't exist; provide new id" });
     });
 });
+
+module.exports = router;
